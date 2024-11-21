@@ -16,11 +16,14 @@ class AudioDataset(Dataset):
     def __init__(self, csv_file, transform=None):
         self.data_frame = pd.read_csv(csv_file)
         self.transform = transform
+        labels = sorted(self.data_frame.iloc[:, 3].unique())
+        self.label_mapping = {label: idx for idx, label in enumerate(labels)}
+        print(self.label_mapping)
 
     def __len__(self):
         return len(self.data_frame)
     
-    def extraire_features(fichier_audio, start_time, end_time):
+    def extraire_features(self,fichier_audio, start_time, end_time):
         # Calculer la durée à partir des temps de début et de fin
         duration = end_time - start_time
         # Charger le fichier audio entre les secondes spécifiées
@@ -66,7 +69,7 @@ class AudioDataset(Dataset):
         # Ajouter une dimension pour le canal (1, car c'est un spectrogramme mono)
         features = np.expand_dims(features, axis=0)
 
-        return torch.tensor(features, dtype=torch.float32), torch.tensor(label, dtype=torch.long)
+        return torch.tensor(features, dtype=torch.float32), torch.tensor(self.label_mapping[label], dtype=torch.long)
 
 
 
