@@ -20,12 +20,6 @@ from sklearn.metrics import classification_report
 from tqdm import tqdm
 import pandas as pd
 import numpy as np
-import os
-import sys
-import h5py
-import json
-import copy
-import time
 from datetime import datetime
 
 
@@ -101,9 +95,10 @@ def train(model,dataloader,loss_fn,optimizer,device,epochs):
     print('Finished Training')
 
 
-BATCH_SIZE=128
-EPOCHS=1
-loss_fn=pt.nn.MSELoss()
-optimizer=pt.optim.SGD(model.parameters(),lr=0.1,momentum=0.9)
+if __name__ == "__main__":
+    BATCH_SIZE=128
+    EPOCHS=1
+    loss_fn=pt.nn.MSELoss()
+    optimizer=pt.optim.SGD(model.parameters(),lr=0.1,momentum=0.9)
 
-train(model,train_dataloader,loss_fn,optimizer,device,EPOCHS)
+    train(model,train_dataloader,loss_fn,optimizer,device,EPOCHS)
