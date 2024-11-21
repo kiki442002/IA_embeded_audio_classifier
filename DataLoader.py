@@ -9,27 +9,6 @@ import matplotlib.pyplot as plt
 import pandas as pd
 from torch.utils.data import Dataset, DataLoader
 
-# Définir la classe du réseau CNN
-class CNN(nn.Module):
-    def __init__(self):
-        super(CNN, self).__init__()
-        self.conv1 = nn.Conv2d(in_channels=3, out_channels=16, kernel_size=3, padding=1)
-        self.conv2 = nn.Conv2d(in_channels=16, out_channels=32, kernel_size=3, padding=1)
-        self.pool = nn.MaxPool2d(kernel_size=2, stride=2, padding=0)
-        self.fc1 = nn.Linear(in_features=32 * 8 * 8, out_features=128)
-        self.fc2 = nn.Linear(in_features=128, out_features=10)
-        self.relu = nn.ReLU()
-
-    def forward(self, x):
-        x = self.pool(self.relu(self.conv1(x)))
-        x = self.pool(self.relu(self.conv2(x)))
-        x = x.view(-1, 32 * 8 * 8)  # Flatten the tensor
-        x = self.relu(self.fc1(x))
-        x = self.fc2(x)
-        return x
-    
-    
-
 
 
 # Définir une classe Dataset personnalisée pour les données audio
