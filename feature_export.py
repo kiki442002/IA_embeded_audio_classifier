@@ -10,6 +10,13 @@ def extraire_features(fichier_audio, start_time, end_time):
     # Charger le fichier audio entre les secondes spécifiées
     y, sr = librosa.load(fichier_audio, offset=start_time, duration=duration, sr=16000)
     
+
+    
+    # # Génération d'une sinus de 1kHz de 2s en fonction de sr
+    # t = np.linspace(0, 2, 2*sr, endpoint=False)
+    # y = 80*np.sin(2*np.pi*1000*t)
+    
+
     # Calcule fenetre de hanning
     window = librosa.filters.get_window('hann', 1024, fftbins=True)
     # Obtenir les coefficients des filtres Mel
@@ -31,9 +38,9 @@ def extraire_features(fichier_audio, start_time, end_time):
     mel_power = np.log(np.dot(mel_filters, dsp) + 1e-10)
 
     # z-score normalization
-    z_score = (mel_power - np.mean(mel_power)) / np.std(mel_power)
+    z_score = ((mel_power - np.mean(mel_power)) / np.std(mel_power))
 
-    return z_score.T
+    return z_score
 
 
 
@@ -47,7 +54,15 @@ fichier_audio = 'segmented_selected_data/cp005_1.wav'
 start_time = 1  # seconde de début
 end_time = 3   # seconde de fin
 
+
 features = extraire_features(fichier_audio, start_time, end_time)
 
-
-
+# Plot du spectrograme de mel
+plt.figure(figsize=(10, 4))
+plt.imshow(features, aspect='auto', origin='lower', cmap='viridis')
+plt.title('Spectrogramme de Mel')
+plt.xlabel('Frames')
+plt.ylabel('Coefficients Mel')
+plt.colorbar(format='%+2.0f dB')
+plt.tight_layout()
+plt.show()
