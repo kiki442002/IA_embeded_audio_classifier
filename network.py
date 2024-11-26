@@ -76,33 +76,3 @@ class CNNNetwork(nn.Module):
     def count_parameters(self):
         return sum(p.numel() for p in self.parameters() if p.requires_grad)
 
-#### Train ####
-def train_single_epoch(model,dataloader,loss_fn,optimizer,device):
-    for waveform,label in tqdm.tqdm(dataloader):
-        waveform=waveform.to(device)
-        # label=pt.from_numpy(numpy.array(label))
-        label=label.to(device)
-        # calculate loss and preds
-        logits=model(waveform)
-        loss=loss_fn(logits.float(),label.float().view(-1,1))
-        # backpropogate the loss and update the gradients
-        optimizer.zero_grad()
-        loss.backward()
-        optimizer.step()
-    print(f"loss:{loss.item()}")
-    
-def train(model,dataloader,loss_fn,optimizer,device,epochs):
-    for i in tqdm.tqdm(range(epochs)):
-        print(f"epoch:{i+1}")
-        train_single_epoch(model,dataloader,loss_fn,optimizer,device)
-        print('-------------------------------------------')
-    print('Finished Training')
-
-
-if __name__ == "__main__":
-    BATCH_SIZE=128
-    EPOCHS=1
-    loss_fn=pt.nn.MSELoss()
-    optimizer=pt.optim.SGD(model.parameters(),lr=0.1,momentum=0.9)
-
-    train(model,train_dataloader,loss_fn,optimizer,device,EPOCHS)
