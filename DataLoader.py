@@ -8,17 +8,16 @@ import librosa
 import matplotlib.pyplot as plt
 import pandas as pd
 from torch.utils.data import Dataset, DataLoader
+import torch.nn.functional as F
 
 
 
 # Définir une classe Dataset personnalisée pour les données audio
 class AudioDataset(Dataset):
-    def __init__(self, csv_file, transform=None):
+    def __init__(self, csv_file, labels, transform=None):
         self.data_frame = pd.read_csv(csv_file)
         self.transform = transform
-        labels = sorted(self.data_frame.iloc[:, 3].unique())
-        self.label_mapping = {label: idx for idx, label in enumerate(labels)}
-        print(self.label_mapping)
+        self.label_mapping = labels
 
     def __len__(self):
         return len(self.data_frame)
@@ -50,7 +49,7 @@ class AudioDataset(Dataset):
         mel_power = np.log(np.dot(mel_filters, dsp) + 1e-10)
 
         # z-score normalization
-        z_score = ((mel_power - np.mean(mel_power)) / np.std(mel_power))
+        z_score = ((mel_power - np.mean(mel_power)) /(np.std(mel_power)+1e-10))
 
         return z_score
 
@@ -68,9 +67,10 @@ class AudioDataset(Dataset):
 
         # Ajouter une dimension pour le canal (1, car c'est un spectrogramme mono)
         features = np.expand_dims(features, axis=0)
-
-        return torch.tensor(features, dtype=torch.float32), torch.tensor(self.label_mapping[label], dtype=torch.long)
-
+        # Convertir le label en one-hot encodé
+        label_one_hot = F.one_hot(torch.tensor(self.label_mapping[label]), num_classes=len(self.label_mapping)).float()
+        print(torch.tensor(features, dtype=torch.float32).shape)
+        return torch.tensor(features, dtype=torch.float32), label_one_hot
 
 
 
