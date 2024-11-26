@@ -69,7 +69,6 @@ class AudioDataset(Dataset):
         features = np.expand_dims(features, axis=0)
         # Convertir le label en one-hot encodé
         label_one_hot = F.one_hot(torch.tensor(self.label_mapping[label]), num_classes=len(self.label_mapping)).float()
-        print(torch.tensor(features, dtype=torch.float32).shape)
         return torch.tensor(features, dtype=torch.float32), label_one_hot
 
 

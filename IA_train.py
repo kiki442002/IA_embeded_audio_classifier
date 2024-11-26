@@ -2,14 +2,11 @@ import torch as pt
 import torch.nn as nn
 import torch.optim as optim
 import tqdm
-from DataLoader import AudioDataset
+from AudioDataset import AudioDataset
 from network import CNNNetwork
 
 def train_single_epoch(model, dataloader, loss_fn, optimizer, device):
     model.train()
-    running_loss = 0.0
-    correct = 0
-    total = 0
     with tqdm.tqdm(total=len(dataloader), desc="Training", unit="batch") as pbar:
         for batch in dataloader:
             inputs, labels = batch
@@ -65,7 +62,7 @@ def train(model, train_loader, test_loader, loss_fn, optimizer, device, epochs, 
         print(f"Epoch {epoch + 1}/{epochs}")
         train_single_epoch(model, train_loader, loss_fn, optimizer, device)
         
-        
+
         test_loss, test_accuracy = evaluate(model, test_loader, loss_fn, device, "Test")
 
         if best_accuracy < test_accuracy:
@@ -93,11 +90,15 @@ if __name__ == "__main__":
     PATIENCE = 100
     device = pt.device("cuda" if pt.cuda.is_available() else "cpu")
 
-    labels = {"rain": 0, "walking":1, "wind": 2, "car_passing": 3}
+    #labels = {"rain": 0, "walking":1, "wind": 2, "car_passing": 3}
+    labels =  {"rain": 0, "walking":1}
 
     # Charger les données
-    trainData = AudioDataset("meta/bdd_train.csv", labels)
-    testData = AudioDataset("meta/bdd_test.csv", labels)  # Assurez-vous d'avoir un ensemble de validation
+    #trainData = AudioDataset("meta/bdd_train.csv", labels)
+    #testData = AudioDataset("meta/bdd_test.csv", labels)  # Assurez-vous d'avoir un ensemble de validation
+
+    trainData = AudioDataset("meta/bdd_A_train.csv", labels)
+    testData = AudioDataset("meta/bdd_A_test.csv", labels)
 
     train_loader = pt.utils.data.DataLoader(trainData, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
     test_loader = pt.utils.data.DataLoader(testData, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)

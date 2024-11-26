@@ -7,21 +7,7 @@ Created on Thu Nov 21 09:58:29 2024
 
 import torch as pt
 import torch.nn as nn
-import torch.nn.functional as F
-import torch.optim as optim
-from torch.autograd import Variable
-from torch.utils.data import Dataset,DataLoader
-from torch.nn.utils.rnn import pad_sequence
-from torch.nn.utils.rnn import pack_padded_sequence, pad_packed_sequence
-from scipy.ndimage import gaussian_filter1d
-from sklearn.metrics import f1_score
-from sklearn.metrics import classification_report
 
-import torch
-from tqdm import tqdm
-import pandas as pd
-import numpy as np
-from datetime import datetime
 
 
 if pt.cuda.is_available():
@@ -58,7 +44,7 @@ class CNNNetwork(nn.Module):
             nn.Linear(in_features=32, out_features=8),
             nn.ReLU()
         )
-        self.fc4 = nn.Linear(in_features=8, out_features=4)
+        self.fc4 = nn.Linear(in_features=8, out_features=2)
         self.output = nn.Softmax(dim=1)
 
     def forward(self, x):
