@@ -39,7 +39,6 @@ class CNNNetwork(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=(2, 2), stride=2)
         )
-<<<<<<< HEAD
         self.flatten=nn.Flatten() # Converts from an n-dimension matrices into a vector
         self.linear1=nn.Linear(in_features=32,out_features=32)
         self.linear2=nn.Linear(in_features=32,out_features=2)
@@ -52,14 +51,6 @@ class CNNNetwork(nn.Module):
         x=self.linear1(x)
         logits=self.linear2(x)
         output=self.output(logits)
-=======
-        self.conv2 = nn.Sequential(
-            nn.Conv2d(in_channels=4, out_channels=16, kernel_size=(3, 3), stride=1, padding=1),
-            nn.ReLU(),
-            nn.MaxPool2d(kernel_size=(2, 2), stride=2)
-        )
-        self.flatten = nn.Flatten()
->>>>>>> ed53f266 (Refactor AudioDataset to accept labels directly and implement one-hot encoding; add ONNX model export functionality; remove unused feature_export.py; update BDD_segmentation for new data structure.)
         
         self.fc1 = nn.Sequential(
             nn.Linear(in_features=896, out_features=40),
