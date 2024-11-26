@@ -39,18 +39,12 @@ class CNNNetwork(nn.Module):
             nn.ReLU(),
             nn.MaxPool2d(kernel_size=(2, 2), stride=2)
         )
-        self.flatten=nn.Flatten() # Converts from an n-dimension matrices into a vector
-        self.linear1=nn.Linear(in_features=32,out_features=32)
-        self.linear2=nn.Linear(in_features=32,out_features=2)
-        self.output=nn.Softmax(dim=1) # Converts logits into probabilities
-    
-    def forward(self,input_data):
-        x=self.conv1(input_data)
-        x=self.conv2(x)
-        x=self.flatten(x)
-        x=self.linear1(x)
-        logits=self.linear2(x)
-        output=self.output(logits)
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(in_channels=4, out_channels=16, kernel_size=(3, 3), stride=1, padding=1),
+            nn.ReLU(),
+            nn.MaxPool2d(kernel_size=(2, 2), stride=2)
+        )
+        self.flatten = nn.Flatten()
         
         self.fc1 = nn.Sequential(
             nn.Linear(in_features=896, out_features=40),
