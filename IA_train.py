@@ -36,8 +36,8 @@ def evaluate(model, dataloader, loss_fn, device,name=""):
                 inputs, labels = inputs.to(device), labels.to(device)
 
                 outputs = model(inputs)
-                loss = loss_fn(outputs, labels)
-                running_loss += loss.item()
+                #loss = loss_fn(outputs, labels)
+                #running_loss += loss.item()
 
                 _, predicted = pt.max(outputs.data, 1)
                 total += labels.size(0)
@@ -85,13 +85,13 @@ def train(model, train_loader, test_loader, loss_fn, optimizer, device, epochs, 
 
 if __name__ == "__main__":
     # Initialisation des paramètres et des objets nécessaires
-    BATCH_SIZE = 1
+    BATCH_SIZE = 64
     EPOCHS = 50
     PATIENCE = 50
     device = pt.device("cuda" if pt.cuda.is_available() else "cpu")
 
-    #labels = {"rain": 0, "walking":1, "wind": 2, "car_passing": 3}
-    labels =  {"rain": 0, "walking":1}
+    labels = {"rain": 0, "walking":1, "wind": 2, "car_passing": 3}
+    #labels =  {"rain": 0, "walking":1}
 
     # Charger les données
     #trainData = AudioDataset("meta/bdd_train.csv", labels)
@@ -105,10 +105,11 @@ if __name__ == "__main__":
 
     # Initialiser le modèle, la fonction de perte et l'optimiseur
     model = CNNNetwork().to(device)
-    #loss_fn = nn.CrossEntropyLoss()
+    loss_fn = nn.CrossEntropyLoss()
     #loss_fn = nn.MultiLabelSoftMarginLoss()
     #loss_fn = nn.BCEWithLogitsLoss()
-    loss_fn = nn.BCELoss()
+    #loss_fn = nn.BCELoss()
+
 
     #optimizer = optim.SGD(model.parameters(), lr=0.01, momentum=0.9)
     optimizer = optim.AdamW(model.parameters(), lr=0.001)
@@ -116,7 +117,18 @@ if __name__ == "__main__":
     print(f"Total number of parameters: {model.count_parameters()}")
 
     # Entraîner le modèle avec early stopping
-    train(model, train_loader, test_loader, loss_fn, optimizer, device, EPOCHS, PATIENCE)
+    #train(model, train_loader, test_loader, loss_fn, optimizer, device, EPOCHS, PATIENCE)
+
+
+    # testData = AudioDataset("meta/bdd_B_test.csv", labels)
+    # test_loader = pt.utils.data.DataLoader(testData)
+    # # Charger le meilleur modèle sauvegardé
+    # model.load_state_dict(pt.load('best_model.pth'))
+
+
+    # # Évaluer le modèle sur les données de test
+    # test_loss, test_accuracy = evaluate(model, test_loader, loss_fn, device, "TestB")
+    # print(f"TestB Loss: {test_loss:.4f}, TestB Accuracy: {test_accuracy:.2f}%")
 
 
 

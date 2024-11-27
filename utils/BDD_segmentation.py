@@ -47,11 +47,10 @@ print(compte_par_label)
 #    car  0      0       2400  200  400
 
 
-df_rain = segments_combines[segments_combines['label'] == 'rain'].sample(frac=1).reset_index(drop=True)
-df_walk = segments_combines[segments_combines['label'] == 'walking'].sample(frac=1).reset_index(drop=True)
-df_wind = segments_combines[segments_combines['label'] == 'wind'].sample(frac=1).reset_index(drop=True)
-df_car = segments_combines[segments_combines['label'] == 'car_passing'].sample(frac=1).reset_index(drop=True)
-
+df_rain = segments_combines[segments_combines['label'] == 'rain']
+df_walk = segments_combines[segments_combines['label'] == 'walking']
+df_wind = segments_combines[segments_combines['label'] == 'wind']
+df_car = segments_combines[segments_combines['label'] == 'car_passing']
 bdd_A_train = pd.concat([df_rain[:1200], df_walk[:1200]])
 bdd_A_test = pd.concat([df_rain[1200:1500], df_walk[1200:1500]])
 bdd_B_train = pd.concat([df_rain[1500:2700], df_walk[1500:2700], df_wind[:2400], df_car[:2400]])
@@ -66,8 +65,8 @@ bdd_B_dev.to_csv('meta/bdd_B_dev.csv', index=False)
 bdd_B_test.to_csv('meta/bdd_B_test.csv', index=False)
 
 
-# bdd_train = pd.concat([df_rain[:2400], df_car[:2400], df_walk[:2400], df_wind[:2400]])
-# bdd_test = pd.concat([df_rain[2400:], df_car[2400:], df_walk[2400:], df_wind[2400:]])
+bdd_train = pd.concat([df_rain[:2400], df_car[:2400], df_walk[:2400], df_wind[:2400]])
+bdd_test = pd.concat([df_rain[2400:], df_car[2400:], df_walk[2400:], df_wind[2400:]])
 
-# bdd_train.to_csv('meta/bdd_train.csv', index=False)
-# bdd_test.to_csv('meta/bdd_test.csv', index=False)
+bdd_train.to_csv('meta/bdd_train.csv', index=False)
+bdd_test.to_csv('meta/bdd_test.csv', index=False)

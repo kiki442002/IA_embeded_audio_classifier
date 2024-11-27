@@ -18,8 +18,9 @@ else:
 
 #### Network ####
 class CNNNetwork(nn.Module):
-    def __init__(self):
+    def __init__(self, outsize=True):
         super().__init__()
+        self.outsize = outsize
         self.conv1 = nn.Sequential(
             nn.Conv2d(in_channels=1, out_channels=4, kernel_size=(3, 3), stride=1, padding=1),
             nn.ReLU(),
@@ -44,7 +45,8 @@ class CNNNetwork(nn.Module):
             nn.Linear(in_features=32, out_features=8),
             nn.ReLU()
         )
-        self.fc4 = nn.Linear(in_features=8, out_features=2)
+        self.fc4A = nn.Linear(in_features=8, out_features=2)
+        self.fc4B = nn.Linear(in_features=8, out_features=4)
         self.output = nn.Softmax(dim=1)
 
     def forward(self, x):
@@ -54,7 +56,10 @@ class CNNNetwork(nn.Module):
         x = self.fc1(x)
         x = self.fc2(x)
         x = self.fc3(x)
-        logits = self.fc4(x)
+        if self.outsize == True:
+            logits = self.fc4A(x)
+        else:
+            logits = self.fc4B(x)
         output = self.output(logits)
         return output
     
