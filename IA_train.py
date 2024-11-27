@@ -2,8 +2,8 @@ import torch as pt
 import torch.nn as nn
 import torch.optim as optim
 import tqdm
-from AudioDataset import AudioDataset
-from network import CNNNetwork
+from utils.AudioDataset import AudioDataset
+from utils.TD_network import CNNNetwork
 
 def train_single_epoch(model, dataloader, loss_fn, optimizer, device):
     model.train()
@@ -86,8 +86,8 @@ def train(model, train_loader, test_loader, loss_fn, optimizer, device, epochs, 
 if __name__ == "__main__":
     # Initialisation des paramètres et des objets nécessaires
     BATCH_SIZE = 1
-    EPOCHS = 500
-    PATIENCE = 100
+    EPOCHS = 50
+    PATIENCE = 50
     device = pt.device("cuda" if pt.cuda.is_available() else "cpu")
 
     #labels = {"rain": 0, "walking":1, "wind": 2, "car_passing": 3}
@@ -100,8 +100,8 @@ if __name__ == "__main__":
     trainData = AudioDataset("meta/bdd_A_train.csv", labels)
     testData = AudioDataset("meta/bdd_A_test.csv", labels)
 
-    train_loader = pt.utils.data.DataLoader(trainData, batch_size=BATCH_SIZE, shuffle=True, num_workers=0)
-    test_loader = pt.utils.data.DataLoader(testData, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
+    train_loader = pt.utils.data.DataLoader(trainData, batch_size=BATCH_SIZE, shuffle=True)
+    test_loader = pt.utils.data.DataLoader(testData)
 
     # Initialiser le modèle, la fonction de perte et l'optimiseur
     model = CNNNetwork().to(device)
@@ -117,3 +117,6 @@ if __name__ == "__main__":
 
     # Entraîner le modèle avec early stopping
     train(model, train_loader, test_loader, loss_fn, optimizer, device, EPOCHS, PATIENCE)
+
+
+

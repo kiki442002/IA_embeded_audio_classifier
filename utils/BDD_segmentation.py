@@ -31,7 +31,7 @@ segments_combines = pd.concat([segments_train, segments_test])
 
 
 # Sauvegarder dans un seul fichier CSV
-fichier_sortie_combines = 'meta_segments_combines_all.csv'
+fichier_sortie_combines = 'meta/meta_segments_combines_all.csv'
 segments_combines.to_csv(fichier_sortie_combines, index=False)
 
 # Compter le nombre de fichiers par label
@@ -52,22 +52,22 @@ df_walk = segments_combines[segments_combines['label'] == 'walking'].sample(frac
 df_wind = segments_combines[segments_combines['label'] == 'wind'].sample(frac=1).reset_index(drop=True)
 df_car = segments_combines[segments_combines['label'] == 'car_passing'].sample(frac=1).reset_index(drop=True)
 
-# bdd_A_train = pd.concat([df_rain[:1200], df_walk[:1200]])
-# bdd_A_test = pd.concat([df_rain[1200:1500], df_walk[1200:1500]])
-# bdd_B_train = pd.concat([df_rain[1500:2700], df_walk[1500:2700], df_wind[:2400], df_car[:2400]])
-# bdd_B_dev = pd.concat([df_rain[2700:2800], df_walk[2700:2800], df_wind[2400:2600], df_car[2400:2600]])
-# bdd_B_test = pd.concat([df_rain[2800:], df_walk[2800:], df_wind[2600:], df_car[2600:]])
+bdd_A_train = pd.concat([df_rain[:1200], df_walk[:1200]])
+bdd_A_test = pd.concat([df_rain[1200:1500], df_walk[1200:1500]])
+bdd_B_train = pd.concat([df_rain[1500:2700], df_walk[1500:2700], df_wind[:2400], df_car[:2400]])
+bdd_B_dev = pd.concat([df_rain[2700:2800], df_walk[2700:2800], df_wind[2400:2600], df_car[2400:2600]])
+bdd_B_test = pd.concat([df_rain[2800:], df_walk[2800:], df_wind[2600:], df_car[2600:]])
 
-# # Sauvegarder les fichiers
-# bdd_A_train.to_csv('bdd_A_train.csv', index=False)
-# bdd_A_test.to_csv('bdd_A_test.csv', index=False)
-# bdd_B_train.to_csv('bdd_B_train.csv', index=False)
-# bdd_B_dev.to_csv('bdd_B_dev.csv', index=False)
-# bdd_B_test.to_csv('bdd_B_test.csv', index=False)
+# Sauvegarder les fichiers
+bdd_A_train.to_csv('meta/bdd_A_train.csv', index=False)
+bdd_A_test.to_csv('meta/bdd_A_test.csv', index=False)
+bdd_B_train.to_csv('meta/bdd_B_train.csv', index=False)
+bdd_B_dev.to_csv('meta/bdd_B_dev.csv', index=False)
+bdd_B_test.to_csv('meta/bdd_B_test.csv', index=False)
 
 
-bdd_train = pd.concat([df_rain[:2400], df_car[:2400], df_walk[:2400], df_wind[:2400]])
-bdd_test = pd.concat([df_rain[2400:], df_car[2400:], df_walk[2400:], df_wind[2400:]])
+# bdd_train = pd.concat([df_rain[:2400], df_car[:2400], df_walk[:2400], df_wind[:2400]])
+# bdd_test = pd.concat([df_rain[2400:], df_car[2400:], df_walk[2400:], df_wind[2400:]])
 
-bdd_train.to_csv('bdd_train.csv', index=False)
-bdd_test.to_csv('bdd_test.csv', index=False)
+# bdd_train.to_csv('meta/bdd_train.csv', index=False)
+# bdd_test.to_csv('meta/bdd_test.csv', index=False)
