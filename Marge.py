@@ -2,7 +2,7 @@ import numpy as np
 from scipy import stats
 
 # Exemple de 5 échantillons
-samples = [0.98,0.9817,0.9733]
+samples = [0.97,0.9717,0.9683,0.9667,0.9483]
 
 # Calculer la moyenne et l'écart-type des échantillons
 mean = np.mean(samples)
