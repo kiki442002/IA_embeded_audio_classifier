@@ -103,7 +103,7 @@ if __name__ == "__main__":
     # Initialiser le modèle, la fonction de perte et l'optimiseur
     model = CNNNetwork().to(device)
     model.outsize = OUTSIZE
-    print("Charger pour 4 labels" if OUTSIZE else "Charger pour 2 labels")
+    print("Charger pour 2 labels" if OUTSIZE else "Charger pour 4 labels")
     loss_fn = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=0.001)
 
