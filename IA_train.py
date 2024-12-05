@@ -90,7 +90,7 @@ if __name__ == "__main__":
     BATCH_SIZE = 1           # Taille du lot
     EPOCHS = 50              # Nombre d'époques
     PATIENCE = 50            # Nombre d'époques sans amélioration avant l'arrêt
-    OUTSIZE = False           # True pour DA, False pour DB
+    OUTSIZE = True           # True pour DA, False pour DB
     ##########################
     ##########################
 
@@ -103,7 +103,7 @@ if __name__ == "__main__":
     # Initialiser le modèle, la fonction de perte et l'optimiseur
     model = CNNNetwork().to(device)
     model.outsize = OUTSIZE
-    print("Charger pour 4 labels" if OUTSIZE else "Charger pour 2 labels")
+    print("Charger pour 2 labels" if OUTSIZE else "Charger pour 4 labels")
     loss_fn = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=0.001)
 
@@ -135,7 +135,7 @@ if __name__ == "__main__":
     # Charger le meilleur modèle sauvegardé et évaluer sur les données de test #
     ############################################################################
     # Charger le meilleur modèle sauvegardé
-    model.load_state_dict(pt.load('best_model.pth'))
+    model.load_state_dict(pt.load('best_model.pth', weights_only=True))
 
 
     # Évaluer le modèle sur les données de test
