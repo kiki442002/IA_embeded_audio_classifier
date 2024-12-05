@@ -135,7 +135,7 @@ if __name__ == "__main__":
     # Charger le meilleur modèle sauvegardé et évaluer sur les données de test #
     ############################################################################
     # Charger le meilleur modèle sauvegardé
-    model.load_state_dict(pt.load('best_model.pth'))
+    model.load_state_dict(pt.load('best_model.pth', weights_only=True))
 
 
     # Évaluer le modèle sur les données de test
