@@ -90,7 +90,7 @@ if __name__ == "__main__":
     BATCH_SIZE = 1           # Taille du lot
     EPOCHS = 50              # Nombre d'époques
     PATIENCE = 50            # Nombre d'époques sans amélioration avant l'arrêt
-    OUTSIZE = True           # True pour DA, False pour DB
+    OUTSIZE = False           # True pour DA, False pour DB
     ##########################
     ##########################
 
@@ -128,21 +128,19 @@ if __name__ == "__main__":
     #######################
     # Entraîner le modèle #
     #######################
-    train(model, train_loader, test_loader, loss_fn, optimizer, device, EPOCHS, PATIENCE)
+    #train(model, train_loader, test_loader, loss_fn, optimizer, device, EPOCHS, PATIENCE)
 
 
     ############################################################################
     # Charger le meilleur modèle sauvegardé et évaluer sur les données de test #
     ############################################################################
-    # testData = AudioDataset("meta/bdd_B_test.csv", labels)
-    # test_loader = pt.utils.data.DataLoader(testData)
-    # # Charger le meilleur modèle sauvegardé
-    # model.load_state_dict(pt.load('best_model.pth'))
+    # Charger le meilleur modèle sauvegardé
+    model.load_state_dict(pt.load('best_model.pth'))
 
 
-    # # Évaluer le modèle sur les données de test
-    # test_loss, test_accuracy = evaluate(model, test_loader, loss_fn, device, "TestB")
-    # print(f"TestB Loss: {test_loss:.4f}, TestB Accuracy: {test_accuracy:.2f}%")
+    # Évaluer le modèle sur les données de test
+    test_loss, test_accuracy = evaluate(model, test_loader, loss_fn, device, "TestB")
+    print(f"TestB Loss: {test_loss:.4f}, TestB Accuracy: {test_accuracy:.2f}%")
 
 
 
