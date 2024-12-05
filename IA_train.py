@@ -82,6 +82,7 @@ def train(model, train_loader, test_loader, loss_fn, optimizer, device, epochs, 
         print('-------------------------------------------')
         print("")
     print('Finished Training')
+    return best_accuracy
 
 if __name__ == "__main__":
     ##########################
@@ -90,7 +91,7 @@ if __name__ == "__main__":
     BATCH_SIZE = 1           # Taille du lot
     EPOCHS = 50              # Nombre d'époques
     PATIENCE = 50            # Nombre d'époques sans amélioration avant l'arrêt
-    OUTSIZE = True           # True pour DA, False pour DB
+    OUTSIZE = False          # True pour DA, False pour DB
     ##########################
     ##########################
 
@@ -116,7 +117,7 @@ if __name__ == "__main__":
         labels = {"rain": 0, "walking":1, "wind": 2, "car_passing": 3}
         trainData = AudioDataset("meta/bdd_B_train.csv", labels)
         testData = AudioDataset("meta/bdd_B_test.csv", labels)
-        model.load_state_dict(pt.load('best_model.pth'))
+        model.load_state_dict(pt.load('best_model.pth', weights_only=True))
     
     train_loader = pt.utils.data.DataLoader(trainData, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = pt.utils.data.DataLoader(testData)
@@ -135,7 +136,7 @@ if __name__ == "__main__":
     # Charger le meilleur modèle sauvegardé et évaluer sur les données de test #
     ############################################################################
     # Charger le meilleur modèle sauvegardé
-    model.load_state_dict(pt.load('best_model.pth', weights_only=True))
+    #model.load_state_dict(pt.load('best_model.pth', weights_only=True))
 
 
     # Évaluer le modèle sur les données de test

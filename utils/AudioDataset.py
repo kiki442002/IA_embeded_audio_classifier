@@ -14,13 +14,14 @@ import torch.nn.functional as F
 
 # Définir une classe Dataset personnalisée pour les données audio
 class AudioDataset(Dataset):
-    def __init__(self, csv_file, labels, transform=None):
+    def __init__(self, csv_file, labels, selection_list = None ,transform=None):
         self.data_frame = pd.read_csv(csv_file)
         self.transform = transform
         self.label_mapping = labels
+        self.selection_list = selection_list
 
     def __len__(self):
-        return len(self.data_frame)
+        return len(self.selection_list) if self.selection_list != None else len(self.data_frame)
     
     def extraire_features(self,fichier_audio, start_time, end_time):
         # Calculer la durée à partir des temps de début et de fin
@@ -54,10 +55,16 @@ class AudioDataset(Dataset):
         return z_score
 
     def __getitem__(self, idx):
-        audio_path = "segmented_selected_data/"+self.data_frame.iloc[idx, 0]
-        start_time = self.data_frame.iloc[idx, 1]
-        end_time = self.data_frame.iloc[idx, 2]
-        label = self.data_frame.iloc[idx, 3]
+        
+        if(self.selection_list == None):
+            data = self.data_frame.iloc[idx]
+        else:
+            data = self.data_frame.iloc[self.selection_list[idx]]
+
+        audio_path = "segmented_selected_data/"+ data.iloc[0]
+        start_time = data.iloc[1]
+        end_time = data.iloc[2]
+        label = data.iloc[3]
 
         # Charger et prétraiter l'audio
         features = self.extraire_features(audio_path, start_time, end_time)
