@@ -11,16 +11,6 @@ from scipy import stats
 import pickle
 
 
-def calculate_margin_of_error(samples, confidence_level=0.95):
-    mean = np.mean(samples)
-    std_dev = np.std(samples, ddof=1)  # ddof=1 pour un échantillon
-    z_score = stats.norm.ppf((1 + confidence_level) / 2)
-    n = len(samples)
-    margin_of_error = z_score * (std_dev / np.sqrt(n))
-    return mean, margin_of_error
-
-
-
 if __name__ == "__main__":
     ##########################
     ##### Hyperparamètres ####
