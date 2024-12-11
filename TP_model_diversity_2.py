@@ -22,8 +22,8 @@ if __name__ == "__main__":
     ##########################
     ##########################
     
-    db_percents = [0.0005, 0.001, 0.002, 0.005, 0.01, 0.05 ,0.15, 0.25, 0.5]
-                        #            #     #      #      #         #
+    db_percents = [0.0005,  0.002, 0.005, 0.01, 0.05 , 0.25]
+
     #################
     # Initilisation #
     #################
@@ -51,7 +51,8 @@ if __name__ == "__main__":
 
     df_db = pd.read_csv('meta/bdd_B_train.csv')
 
-    random_list = []
+
+    model_list = []
     for percent in db_percents:
         accuracies = []
         for i in range(0,5):
@@ -65,9 +66,9 @@ if __name__ == "__main__":
             _ , accuracy = evaluate(model, test_loader, loss_fn, device, name="Final test")
             print(f"Accuracy for {percent} : {accuracy}")
             accuracies+=[accuracy]
-        random_list+=[accuracies]
-        with open('random_list.pkl', 'wb') as f:
-            pickle.dump(random_list, f)
+        model_list+=[accuracies]
+        with open('model1_list.pkl', 'wb') as f:
+            pickle.dump(model_list, f)
 
 
 
