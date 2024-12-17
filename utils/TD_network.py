@@ -9,13 +9,6 @@ import torch as pt
 import torch.nn as nn
 
 
-
-if pt.cuda.is_available():
-    device='cuda'
-else:
-    device='cpu'
-
-
 #### Network ####
 class CNNNetwork(nn.Module):
     def __init__(self, outsize=True):
