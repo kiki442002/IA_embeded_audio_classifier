@@ -38,8 +38,7 @@ class CNNNetwork(nn.Module):
             nn.Linear(in_features=32, out_features=8),
             nn.ReLU()
         )
-        self.fc4A = nn.Linear(in_features=8, out_features=2)
-        self.fc4B = nn.Linear(in_features=8, out_features=4)
+        self.fc4 = nn.Linear(in_features=8, out_features=4)
         self.output = nn.Softmax(dim=1)
 
     def forward(self, x):
@@ -49,10 +48,7 @@ class CNNNetwork(nn.Module):
         x = self.fc1(x)
         x = self.fc2(x)
         x = self.fc3(x)
-        if self.outsize == True:
-            logits = self.fc4A(x)
-        else:
-            logits = self.fc4B(x)
+        logits = self.fc4(x)
         output = self.output(logits)
         return output
     

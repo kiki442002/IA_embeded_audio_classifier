@@ -49,7 +49,6 @@ def evaluate(model, dataloader, loss_fn, device,name=""):
     return avg_loss, accuracy
 
 def train(model, train_loader, test_loader, loss_fn, optimizer, device, epochs, patience):
-    best_loss = float('inf')
     best_epoch = -1
     best_accuracy = 0
 
@@ -90,7 +89,6 @@ if __name__ == "__main__":
     BATCH_SIZE = 1           # Taille du lot
     EPOCHS = 50              # Nombre d'époques
     PATIENCE = 50            # Nombre d'époques sans amélioration avant l'arrêt
-    OUTSIZE = False           # True pour DA, False pour DB
     ##########################
     ##########################
 
@@ -102,24 +100,21 @@ if __name__ == "__main__":
 
     # Initialiser le modèle, la fonction de perte et l'optimiseur
     model = CNNNetwork().to(device)
-    model.outsize = OUTSIZE
-    print("Charger pour 2 labels" if OUTSIZE else "Charger pour 4 labels")
+    print("Charger pour 4 labels")
     loss_fn = nn.CrossEntropyLoss()
     optimizer = optim.AdamW(model.parameters(), lr=0.001)
 
     # Charger les données
-    if OUTSIZE:
-        labels = {"rain": 0, "walking":1}
-        trainData = AudioDataset("meta/bdd_A_train.csv", labels)
-        testData = AudioDataset("meta/bdd_A_test.csv", labels)
-    else:
-        labels = {"rain": 0, "walking":1, "wind": 2, "car_passing": 3}
-        trainData = AudioDataset("meta/bdd_B_train.csv", labels)
-        testData = AudioDataset("meta/bdd_B_test.csv", labels)
-        model.load_state_dict(pt.load('best_model.pth'))
+   
+    labels = {"rain": 0, "walking":1, "wind": 2, "car_passing": 3}
+    trainData = AudioDataset("meta/bdd_train.csv", labels)
+    testData = AudioDataset("meta/bdd_test.csv", labels)
+    devData = AudioDataset("meta/bdd_dev.csv", labels)
+ 
     
     train_loader = pt.utils.data.DataLoader(trainData, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = pt.utils.data.DataLoader(testData)
+    dev_loader = pt.utils.data.DataLoader(devData)
 
 
 
@@ -128,19 +123,19 @@ if __name__ == "__main__":
     #######################
     # Entraîner le modèle #
     #######################
-    #train(model, train_loader, test_loader, loss_fn, optimizer, device, EPOCHS, PATIENCE)
+    train(model, train_loader, dev_loader, loss_fn, optimizer, device, EPOCHS, PATIENCE)
 
 
     ############################################################################
     # Charger le meilleur modèle sauvegardé et évaluer sur les données de test #
     ############################################################################
-    # Charger le meilleur modèle sauvegardé
+    #Charger le meilleur modèle sauvegardé
     model.load_state_dict(pt.load('best_model.pth', weights_only=True))
 
 
     # Évaluer le modèle sur les données de test
-    test_loss, test_accuracy = evaluate(model, test_loader, loss_fn, device, "TestB")
-    print(f"TestB Loss: {test_loss:.4f}, TestB Accuracy: {test_accuracy:.2f}%")
+    test_loss, test_accuracy = evaluate(model, test_loader, loss_fn, device, "Test Evaluation")
+    print(f"Test Loss: {test_loss:.4f}, Test Accuracy: {test_accuracy:.2f}%")
 
 
 
