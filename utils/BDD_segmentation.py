@@ -53,9 +53,7 @@ df_wind = segments_combines[segments_combines['label'] == 'wind']
 df_car = segments_combines[segments_combines['label'] == 'car_passing']
 
 bdd_train = pd.concat([df_rain[:2400], df_car[:2400], df_walk[:2400], df_wind[:2400]])
-bdd_test = pd.concat([df_rain[2400:2800], df_car[2400:2800], df_walk[2400:2800], df_wind[2400:2800]])
-bdd_dev = pd.concat([df_rain[2800:], df_car[2800:], df_walk[2800:], df_wind[2800:]])
+bdd_test = pd.concat([df_rain[2400:], df_car[2400:], df_walk[2400:], df_wind[2400:]])
 
 bdd_train.to_csv('meta/bdd_train.csv', index=False)
 bdd_test.to_csv('meta/bdd_test.csv', index=False)
-bdd_dev.to_csv('meta/bdd_dev.csv', index=False)

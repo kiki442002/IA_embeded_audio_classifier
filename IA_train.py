@@ -65,7 +65,6 @@ def train(model, train_loader, test_loader, loss_fn, optimizer, device, epochs, 
         test_loss, test_accuracy = evaluate(model, test_loader, loss_fn, device, "Test")
 
         if best_accuracy < test_accuracy:
-            best_loss = test_loss
             patience_counter = 0
             best_accuracy = test_accuracy
             best_epoch = epoch
@@ -73,8 +72,7 @@ def train(model, train_loader, test_loader, loss_fn, optimizer, device, epochs, 
             pt.save(model.state_dict(), 'best_model.pth')
         else:
             patience_counter += 1
-        print(f"Test Loss: {test_loss:.4f}, Test Accuracy: {test_accuracy:.2f}% (Best at {best_epoch+1}: {best_accuracy:.2f}%)")
-
+        print(f"Dev Loss: {test_loss:.4f}, Dev Accuracy: {test_accuracy:.2f}% (Best at {best_epoch+1}: {best_accuracy:.2f}%)")
         if patience_counter >= patience:
             print("Early stopping triggered")
             break
@@ -109,21 +107,17 @@ if __name__ == "__main__":
     labels = {"rain": 0, "walking":1, "wind": 2, "car_passing": 3}
     trainData = AudioDataset("meta/bdd_train.csv", labels)
     testData = AudioDataset("meta/bdd_test.csv", labels)
-    devData = AudioDataset("meta/bdd_dev.csv", labels)
  
-    
     train_loader = pt.utils.data.DataLoader(trainData, batch_size=BATCH_SIZE, shuffle=True)
     test_loader = pt.utils.data.DataLoader(testData)
-    dev_loader = pt.utils.data.DataLoader(devData)
-
-
+    
 
     print(f"Total number of parameters: {model.count_parameters()}")
 
     #######################
     # Entraîner le modèle #
     #######################
-    train(model, train_loader, dev_loader, loss_fn, optimizer, device, EPOCHS, PATIENCE)
+    train(model, train_loader, test_loader, loss_fn, optimizer, device, EPOCHS, PATIENCE)
 
 
     ############################################################################
