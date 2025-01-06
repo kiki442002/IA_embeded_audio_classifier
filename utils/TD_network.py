@@ -35,10 +35,11 @@ class CNNNetwork(nn.Module):
             nn.ReLU()
         )
         self.fc3 = nn.Sequential(
-            nn.Linear(in_features=32, out_features=8),
+            nn.Linear(in_features=32, out_features=16),
             nn.ReLU()
         )
-        self.fc4 = nn.Linear(in_features=8, out_features=4)
+        self.fc4 = nn.Linear(in_features=16, out_features=4)
+     
         self.output = nn.Softmax(dim=1)
 
     def forward(self, x):
