@@ -71,6 +71,43 @@ class AudioDataset(Dataset):
 
         return mel_power.T
 
+    def extraire_features_old(self,fichier_audio, start_time, end_time):
+        # Calculer la durée à partir des temps de début et de fin
+        duration = end_time - start_time
+        # Charger le fichier audio entre les secondes spécifiées
+        y, sr = librosa.load(fichier_audio, offset=start_time, duration=duration, sr=16000)
+        
+
+        
+        # # Génération d'une sinus de 1kHz de 2s en fonction de sr
+        # t = np.linspace(0, 2, 2*sr, endpoint=False)
+        # y = 80*np.sin(2*np.pi*1000*t)
+        
+
+        # Calcule fenetre de hanning
+        window = self.window
+        # Obtenir les coefficients des filtres Mel
+        mel_filters = librosa.filters.mel(sr=sr, n_fft=1024, n_mels=30,norm=1.0)
+
+        #separation des données en frames avec un overlap de 50%
+        frames = librosa.util.frame(y, frame_length=1024, hop_length=512)[:, :32]
+
+        # Application de la fenetre de hanning
+        frames = frames * window[:, None]
+
+        # calcul de la rfft des frames
+        rfft = np.fft.rfft(frames, axis=0)
+
+        # calcul la magnitude au carré de la rfft
+        dsp = np.abs(rfft)**2/1024
+
+        # calcul de la puissance des filtres mel
+        mel_power = np.log(np.dot(mel_filters, dsp) + 1e-10)
+
+        # z-score normalization
+        z_score = ((mel_power - np.mean(mel_power)) / np.std(mel_power))
+        return z_score
+    
     def __getitem__(self, idx):
         audio_path = "segmented_selected_data/"+self.data_frame.iloc[idx, 0]
         start_time = self.data_frame.iloc[idx, 1]
@@ -78,8 +115,8 @@ class AudioDataset(Dataset):
         label = self.data_frame.iloc[idx, 3]
 
         # Charger et prétraiter l'audio
-        features = self.extraire_features(audio_path, start_time, end_time)
-
+        #features = self.extraire_features(audio_path, start_time, end_time)
+        features = self.extraire_features_old(audio_path, start_time, end_time)
         if self.transform:
             features = self.transform(features)
 
