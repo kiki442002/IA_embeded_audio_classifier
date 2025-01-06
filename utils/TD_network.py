@@ -8,18 +8,11 @@ Created on Thu Nov 21 09:58:29 2024
 import torch as pt
 import torch.nn as nn
 
-
-
-if pt.cuda.is_available():
-    device='cuda'
-else:
-    device='cpu'
-
-
 #### Network ####
 class CNNNetwork(nn.Module):
-    def __init__(self, outsize=True):
+    def __init__(self, outsize=True, outlier=False):
         super().__init__()
+        self.outlier = outlier
         self.outsize = outsize
         self.conv1 = nn.Sequential(
             nn.Conv2d(in_channels=1, out_channels=4, kernel_size=(3, 3), stride=1, padding=1),
@@ -56,7 +49,13 @@ class CNNNetwork(nn.Module):
         x = self.fc1(x)
         x = self.fc2(x)
         x = self.fc3(x)
-        if self.outsize == True:
+
+        #Outlier sampling methode
+        if self.outlier:
+            return x
+        
+        #Normal inference
+        if self.outsize:
             logits = self.fc4A(x)
         else:
             logits = self.fc4B(x)
