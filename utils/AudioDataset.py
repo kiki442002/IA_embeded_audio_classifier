@@ -76,16 +76,9 @@ class AudioDataset(Dataset):
         duration = end_time - start_time
         # Charger le fichier audio entre les secondes spécifiées
         y, sr = librosa.load(fichier_audio, offset=start_time, duration=duration, sr=16000)
-        
-
-        
-        # # Génération d'une sinus de 1kHz de 2s en fonction de sr
-        # t = np.linspace(0, 2, 2*sr, endpoint=False)
-        # y = 80*np.sin(2*np.pi*1000*t)
-        
 
         # Calcule fenetre de hanning
-        window = self.window
+        window = librosa.filters.get_window('hann', 1024, fftbins=True)
         # Obtenir les coefficients des filtres Mel
         mel_filters = librosa.filters.mel(sr=sr, n_fft=1024, n_mels=30,norm=1.0)
 
@@ -105,7 +98,7 @@ class AudioDataset(Dataset):
         mel_power = np.log(np.dot(mel_filters, dsp) + 1e-10)
 
         # z-score normalization
-        z_score = ((mel_power - np.mean(mel_power)) / np.std(mel_power))
+        z_score = ((mel_power - np.mean(mel_power)) /(np.std(mel_power)+1e-10))
         return z_score
     
     def __getitem__(self, idx):
