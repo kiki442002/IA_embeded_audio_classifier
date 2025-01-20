@@ -100,7 +100,7 @@ if __name__ == "__main__":
     model = CNNNetwork().to(device)
     print("Charger pour 4 labels")
     loss_fn = nn.CrossEntropyLoss()
-    optimizer = optim.AdamW(model.parameters(), lr=0.001)
+    optimizer = optim.AdamW(model.parameters(), lr=0.001, weight_decay=0.01)
 
     # Charger les données
    

@@ -25,7 +25,45 @@ class AudioDataset(Dataset):
     def __len__(self):
         return len(self.data_frame)
     
-    
+    def extraire_features(self,fichier_audio, start_time, end_time):
+        # Calculer la durée à partir des temps de début et de fin
+        duration = end_time - start_time
+        # Charger le fichier audio entre les secondes spécifiées
+        y, sr = librosa.load(fichier_audio, offset=start_time, duration=duration, sr=16000)
+
+        # Calcule fenetre de hanning
+        window = librosa.filters.get_window('hann', 1024, fftbins=True)
+        # Obtenir les coefficients des filtres Mel
+        mel_filters = librosa.filters.mel(sr=sr, n_fft=1024, n_mels=30,norm=1.0)
+
+        #separation des données en frames avec un overlap de 50%
+        frames = librosa.util.frame(y, frame_length=1024, hop_length=512)[:, :32]
+
+        # Application de la fenetre de hanning
+        frames = frames * window[:, None]
+
+        # calcul de la rfft des frames
+        rfft = np.fft.rfft(frames, axis=0)
+
+        # calcul la magnitude au carré de la rfft
+        dsp = np.abs(rfft)**2/1024
+
+        # calcul de la puissance des filtres mel
+        mel_power = np.log(np.dot(mel_filters, dsp) + 1e-10)
+
+        
+        # Normalisation Z-score pour chaque colonne
+        mean = np.mean(mel_power, axis=0)
+        std = np.std(mel_power, axis=0)+1e-10
+        mel_power = (mel_power - mean) / std
+
+        # Normalisation Min-Max pour chaque colonne
+        min_val = np.min(mel_power, axis=0)
+        max_val = np.max(mel_power, axis=0)
+        mel_power = (mel_power - min_val) / (max_val - min_val+1e-10)
+
+        return mel_power
+
 
     
     def __getitem__(self, idx):
@@ -35,8 +73,7 @@ class AudioDataset(Dataset):
         label = self.data_frame.iloc[idx, 3]
 
         # Charger et prétraiter l'audio
-        #features = self.extraire_features(audio_path, start_time, end_time)
-        features = self.extraire_features_old(audio_path, start_time, end_time)
+        features = self.extraire_features(audio_path, start_time, end_time)
         if self.transform:
             features = self.transform(features)
 
