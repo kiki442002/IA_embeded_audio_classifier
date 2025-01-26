@@ -6,7 +6,7 @@ from utils.AudioDataset import AudioDataset
 from utils.TD_network import CNNNetwork
 from IA_train import evaluate, train
 import pickle
-from utils.sampling_function import uncertainty_ratio_sampling, uncertainty_least_confidence_sampling, uncertainty_margin_confidence
+from utils.sampling_function import uncertainty_ratio_sampling, uncertainty_least_confidence_sampling, uncertainty_margin_confidence, diversity_model_base_outlier_sampling
 
 
 if __name__ == "__main__":
@@ -18,7 +18,7 @@ if __name__ == "__main__":
     PATIENCE = 50            # Nombre d'époques sans amélioration avant l'arrêt
     OUTSIZE = False          # True pour DA, False pour DB
     NAME_LIST = "model1_list.pkl"
-    SAMPLE_FUNCTION = uncertainty_ratio_sampling
+    SAMPLE_FUNCTION = diversity_model_base_outlier_sampling
     ##########################
     ##########################
     

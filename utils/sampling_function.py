@@ -2,6 +2,7 @@
 import torch as pt
 import pandas as pd
 import tqdm
+import numpy as np
 
 
 def uncertainty_least_confidence_sampling(model, dataloader, device):
@@ -69,3 +70,32 @@ def uncertainty_margin_confidence(model, dataloader, device):
     # Trier les échantillons par ratio croissant
     return df_margin.sort_values(by='margin', ascending=True)['index'].to_list()
 
+def diversity_model_base_outlier_sampling(model, dataloader, device):
+    model.eval()
+    model.outlier = True
+    outlier_scores = []
+    indices = []
+
+    with pt.no_grad():
+        pbar = tqdm.tqdm(total=len(dataloader), desc="Outlier Sampling")
+        for i, (inputs, _) in enumerate(dataloader):
+            inputs = inputs.to(device)
+            outputs = model(inputs)
+            
+            # Supposons que le modèle retourne des scores d'outlier
+            scores = outputs.detach().cpu().numpy()
+            outlier_scores.extend(scores)
+
+            pbar.update(1)
+        pbar.close()
+
+    outlier_scores = np.array(outlier_scores)
+    outlier_means = np.mean(outlier_scores, axis=0)
+    outlier_dist = []
+    for i, score in enumerate(outlier_scores):
+        dist = np.linalg.norm(score - outlier_means)
+        outlier_dist.append(dist)
+    pd_dist = pd.DataFrame({'dist': outlier_dist, 'index': range(len(outlier_dist))})
+    model.outlier = False
+    return pd_dist.sort_values(by='dist', ascending=False)['index'].to_list()
+    
