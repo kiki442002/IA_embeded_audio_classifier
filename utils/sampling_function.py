@@ -3,6 +3,7 @@ import torch as pt
 import pandas as pd
 import tqdm
 import numpy as np
+from sklearn.cluster import KMeans
 
 
 def uncertainty_least_confidence_sampling(model, dataloader, device):
@@ -74,7 +75,6 @@ def diversity_model_base_outlier_sampling(model, dataloader, device):
     model.eval()
     model.outlier = True
     outlier_scores = []
-    indices = []
 
     with pt.no_grad():
         pbar = tqdm.tqdm(total=len(dataloader), desc="Outlier Sampling")
@@ -99,3 +99,36 @@ def diversity_model_base_outlier_sampling(model, dataloader, device):
     model.outlier = False
     return pd_dist.sort_values(by='dist', ascending=False)['index'].to_list()
     
+def diversity_cluster_based_centroid(model, dataloader, device):
+    model.eval()
+    features = []
+    with pt.no_grad():
+        pbar = tqdm.tqdm(total=len(dataloader), desc="Cluster-based Sampling")
+        for i, (inputs, _) in enumerate(dataloader):
+            inputs = inputs.to(device)
+            outputs = model(inputs)
+            
+            # Supposons que les sorties du modèle sont les caractéristiques
+            features.append(outputs.detach().cpu().numpy())
+
+            pbar.update(1)
+        pbar.close()
+
+    features = np.vstack(features)
+
+    # Appliquer K-means pour regrouper les données en clusters
+    kmeans = KMeans(n_clusters=4, random_state=0).fit(features)
+    cluster_centers = kmeans.cluster_centers_
+    labels = kmeans.labels_
+
+    # Sélectionner l'échantillon le plus proche de chaque centre de cluster
+    df_representative = pd.DataFrame(columns=['distance', 'index'])
+    for center in cluster_centers:
+        distances = pd.DataFrame({"distance":np.linalg.norm(features - center, axis=1),"index":range(len(features))})
+        if df_representative.empty:
+            df_representative = distances
+        else:
+            df_representative = pd.concat([df_representative, distances], ignore_index=True)
+    
+    return  df_representative.sort_values(by='distance', ascending=True).drop_duplicates(subset='index', keep='first')['index'].to_list()
+

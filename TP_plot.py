@@ -15,8 +15,8 @@ def load_data_from_pickle(file_path):
     with open(file_path, 'rb') as f:
         data = pickle.load(f)
     return data
-random_list = load_data_from_pickle('random_list.pkl')
-model_list = load_data_from_pickle('least_confidence_list.pkl')
+random_list = load_data_from_pickle('active_learning_datas/random.pkl')
+model_list = load_data_from_pickle('active_learning_datas/diversity_cluster_based_centroid.pkl')
 
 # Calculer la moyenne et la marge d'erreur pour chaque pourcentage
 means = []
