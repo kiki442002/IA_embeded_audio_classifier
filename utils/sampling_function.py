@@ -4,6 +4,7 @@ import pandas as pd
 import tqdm
 import numpy as np
 from sklearn.cluster import KMeans
+import matplotlib.pyplot as plt
 
 
 def uncertainty_least_confidence_sampling(model, dataloader, device):
@@ -117,9 +118,10 @@ def diversity_cluster_based_centroid(model, dataloader, device):
     features = np.vstack(features)
 
     # Appliquer K-means pour regrouper les données en clusters
-    kmeans = KMeans(n_clusters=4, random_state=0).fit(features)
+    n_clusters=5
+    determine_optimal_clusters(features)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(features)
     cluster_centers = kmeans.cluster_centers_
-    labels = kmeans.labels_
 
     # Sélectionner l'échantillon le plus proche de chaque centre de cluster
     df_representative = pd.DataFrame(columns=['distance', 'index'])
@@ -132,3 +134,56 @@ def diversity_cluster_based_centroid(model, dataloader, device):
     
     return  df_representative.sort_values(by='distance', ascending=True).drop_duplicates(subset='index', keep='first')['index'].to_list()
 
+def determine_optimal_clusters(features, max_clusters=10):
+    inertias = []
+    for k in range(1, max_clusters + 1):
+        kmeans = KMeans(n_clusters=k, random_state=0).fit(features)
+        inertias.append(kmeans.inertia_)
+    
+    # Calculer les coefficients directeurs des tangentes
+    x = np.arange(1, max_clusters + 1)
+    y = np.array(inertias)
+    slopes = np.diff(y) / np.diff(x)
+    
+    # Afficher le graphique du coude
+    plt.plot(x, y, marker='o')
+    plt.xlabel('Number of clusters')
+    plt.ylabel('Inertia')
+    plt.title('Elbow Method For Optimal k')
+    plt.axvline(x=5, linestyle='--', color='g', label=f'Optimal k = {5}')
+    plt.legend()
+    plt.show()
+    
+def diversity_cluster_based_outlier(model, dataloader, device):
+    model.eval()
+    features = []
+    with pt.no_grad():
+        pbar = tqdm.tqdm(total=len(dataloader), desc="Cluster-based Sampling")
+        for i, (inputs, _) in enumerate(dataloader):
+            inputs = inputs.to(device)
+            outputs = model(inputs)
+            
+            # Supposons que les sorties du modèle sont les caractéristiques
+            features.append(outputs.detach().cpu().numpy())
+
+            pbar.update(1)
+        pbar.close()
+
+    features = np.vstack(features)
+
+    # Appliquer K-means pour regrouper les données en clusters
+    n_clusters=5
+    #determine_optimal_clusters(features)
+    kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(features)
+    cluster_centers = kmeans.cluster_centers_
+
+    # Sélectionner l'échantillon le plus proche de chaque centre de cluster
+    df_representative = pd.DataFrame(columns=['distance', 'index'])
+    for center in cluster_centers:
+        distances = pd.DataFrame({"distance":np.linalg.norm(features - center, axis=1),"index":range(len(features))})
+        if df_representative.empty:
+            df_representative = distances
+        else:
+            df_representative = pd.concat([df_representative, distances], ignore_index=True)
+    
+    return  df_representative.sort_values(by='distance', ascending=False).drop_duplicates(subset='index', keep='first')['index'].to_list()
