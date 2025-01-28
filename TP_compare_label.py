@@ -1,11 +1,11 @@
 import pandas as pd
-from utils.sampling_function import uncertainty_least_confidence_sampling, uncertainty_ratio_sampling, uncertainty_margin_confidence
+from utils.sampling_function import uncertainty_least_confidence_sampling, uncertainty_ratio_sampling, uncertainty_margin_confidence, diversity_model_base_outlier_sampling, diversity_cluster_based_centroid, diversity_cluster_based_outlier
 from utils.AudioDataset import AudioDataset
 import torch as pt
 from utils.TD_network import CNNNetwork
 
 
-SAMPLE_FUNCTION = [uncertainty_margin_confidence,uncertainty_ratio_sampling,uncertainty_least_confidence_sampling]
+SAMPLE_FUNCTION = [uncertainty_margin_confidence,uncertainty_ratio_sampling,uncertainty_least_confidence_sampling, diversity_model_base_outlier_sampling, diversity_cluster_based_centroid, diversity_cluster_based_outlier]
 
 
 

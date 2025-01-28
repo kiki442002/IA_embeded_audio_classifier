@@ -18,7 +18,8 @@ if __name__ == "__main__":
     PATIENCE = 50            # Nombre d'époques sans amélioration avant l'arrêt
     OUTSIZE = False          # True pour DA, False pour DB
     NAME_LIST = "model1_list.pkl"
-    SAMPLE_FUNCTION = diversity_cluster_based_centroid
+    SAMPLE_FUNCTION = diversity_cluster_based_outlier
+    PERCENT = 0.5            # Pourcentage de données d'incertitude pour les méthode de conbinations
     ##########################
     ##########################
     
@@ -54,7 +55,10 @@ if __name__ == "__main__":
     df_db = pd.read_csv('meta/bdd_B_train.csv')
 
     for percent in db_percents:
-        trainData.selection_list = sample_choice[:int(len(sample_choice)*percent)]
+        if(isinstance(sample_choice, list)):
+            trainData.selection_list = sample_choice[:int(len(sample_choice)*percent)]
+        else:
+            trainData.selection_list = sample_choice[0][:int(len(sample_choice[0])*percent)] + sample_choice[1][:int(len(sample_choice[0])*(1-percent))]
         # Compter le nombre de labels par classe
         label_counts = df_db.iloc[trainData.selection_list]['label'].value_counts()
         print(f"Label counts for {percent * 100}% of the data:")
@@ -67,7 +71,11 @@ if __name__ == "__main__":
         model.load_state_dict(pt.load('chosen_model.pth', weights_only=True))
 
         # Choix des labels
-        trainData.selection_list = sample_choice[:int(len(sample_choice)*percent)]
+        if(isinstance(sample_choice, list)):
+            trainData.selection_list = sample_choice[:int(len(sample_choice)*percent)]
+        else:
+            trainData.selection_list = sample_choice[0][:int(len(sample_choice[0])*percent)] + sample_choice[1][:int(len(sample_choice[0])*(1-percent))]
+
         train(model, train_loader, dev_loader, loss_fn, optimizer, device, EPOCHS, PATIENCE)
         model.load_state_dict(pt.load('best_model.pth', weights_only=True))
         _ , accuracy = evaluate(model, test_loader, loss_fn, device, name="Final test")

@@ -14,12 +14,11 @@ import torch.nn.functional as F
 
 # Définir une classe Dataset personnalisée pour les données audio
 class AudioDataset(Dataset):
-    def __init__(self, csv_file, labels, selection_list = None ,transform=None):
+    def __init__(self, csv_file, labels, selection_list = None, transform=None):
         self.data_frame = pd.read_csv(csv_file)
         self.transform = transform
         self.label_mapping = labels
         self.selection_list = selection_list
-
     def __len__(self):
         return len(self.selection_list) if self.selection_list != None else len(self.data_frame)
     
@@ -60,6 +59,7 @@ class AudioDataset(Dataset):
             data = self.data_frame.iloc[idx]
         else:
             data = self.data_frame.iloc[self.selection_list[idx]]
+            
 
         audio_path = "segmented_selected_data/"+ data.iloc[0]
         start_time = data.iloc[1]
