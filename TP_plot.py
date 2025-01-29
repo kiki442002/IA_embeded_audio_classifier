@@ -16,8 +16,12 @@ def load_data_from_pickle(file_path):
         data = pickle.load(f)
     return data
 random_list = load_data_from_pickle('active_learning_datas/random.pkl')
-model_list = load_data_from_pickle('active_learning_datas/diversity_cluster_based_centroid.pkl')
-
+model_list_1 = load_data_from_pickle('active_learning_datas/diversity_cluster_based_centroid.pkl')
+model_list_2 = load_data_from_pickle('active_learning_datas/diversity_cluster_based_outlier.pkl')
+model_list_3 = load_data_from_pickle('active_learning_datas/diversity_model_base_outlier.pkl')
+model_list_4 = load_data_from_pickle('active_learning_datas/uncertainty_least_confidence_sampling.pkl')
+model_list_5 = load_data_from_pickle('active_learning_datas/uncertainty_margin_confidence.pkl')
+model_list_6 = load_data_from_pickle('active_learning_datas/uncertainty_ratio_sampling.pkl')
 # Calculer la moyenne et la marge d'erreur pour chaque pourcentage
 means = []
 margins_of_error = []
@@ -31,7 +35,12 @@ for accuracies in random_list:
 # Tracer les courbes
 plt.figure(figsize=(10, 6))
 plt.errorbar(db_percents, means, yerr=margins_of_error, fmt='-o', capsize=5, label='Random sampling')
-plt.plot(db_percents_model, model_list, '-o', label='Least confidence sampling')
+plt.plot(db_percents_model, model_list_1, '-o', label='Diversity Cluster Based Centroid')
+plt.plot(db_percents_model, model_list_2, '-o', label='Diversity Cluster Based Outlier')
+plt.plot(db_percents_model, model_list_3, '-o', label='Diversity Model Base Outlier Sampling')
+plt.plot(db_percents_model, model_list_4, '-o', label='Uncertainty Least Confidence Sampling')
+plt.plot(db_percents_model, model_list_5, '-o', label='Uncertainty Margin Confidence Sampling')
+plt.plot(db_percents_model, model_list_6, '-o', label='Uncertainty Ratio Confidence Sampling')
 plt.xlabel('Percentage of Training Data')
 plt.ylabel('Accuracy')
 plt.title('Model Accuracy with Different Training Data Percentages')
