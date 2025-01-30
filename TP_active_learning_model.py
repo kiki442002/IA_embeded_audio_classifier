@@ -1,4 +1,5 @@
 import torch as pt
+import math
 import torch.nn as nn
 import torch.optim as optim
 import pandas as pd
@@ -6,7 +7,7 @@ from utils.AudioDataset import AudioDataset
 from utils.TD_network import CNNNetwork
 from IA_train import evaluate, train
 import pickle
-from utils.sampling_function import uncertainty_ratio_sampling, uncertainty_least_confidence_sampling, uncertainty_margin_confidence, diversity_model_base_outlier_sampling,diversity_cluster_based_centroid, diversity_cluster_based_outlier
+from utils.sampling_function import uncertainty_ratio_sampling, uncertainty_least_confidence_sampling, uncertainty_margin_confidence, diversity_model_base_outlier_sampling,diversity_cluster_based_centroid, diversity_cluster_based_outlier,combine_method_sampling,uncertainty_diversity_sampling
 
 
 if __name__ == "__main__":
@@ -18,8 +19,8 @@ if __name__ == "__main__":
     PATIENCE = 50            # Nombre d'époques sans amélioration avant l'arrêt
     OUTSIZE = False          # True pour DA, False pour DB
     NAME_LIST = "model1_list.pkl"
-    SAMPLE_FUNCTION = diversity_cluster_based_outlier
-    PERCENT = 0.5            # Pourcentage de données d'incertitude pour les méthode de conbinations
+    SAMPLE_FUNCTION = combine_method_sampling
+    PERCENT =   [0.25,0.75,0]#[0.75,0.25]#[0.15,0.6,0.25]            # Pourcentage de données d'incertitude pour les méthode de conbinations
     ##########################
     ##########################
     
@@ -58,7 +59,13 @@ if __name__ == "__main__":
         if(isinstance(sample_choice, list)):
             trainData.selection_list = sample_choice[:int(len(sample_choice)*percent)]
         else:
-            trainData.selection_list = sample_choice[0][:int(len(sample_choice[0])*percent)] + sample_choice[1][:int(len(sample_choice[0])*(1-percent))]
+            trainData.selection_list = []
+            for i, sub_list in enumerate(sample_choice):
+                filtered_list = [item for item in sub_list if item not in trainData.selection_list]
+                if(i == 0):
+                    trainData.selection_list += filtered_list[:int(math.ceil(len(sub_list)*PERCENT[i]*percent))]
+                else:
+                    trainData.selection_list += filtered_list[:int(len(sub_list)*PERCENT[i]*percent)] 
         # Compter le nombre de labels par classe
         label_counts = df_db.iloc[trainData.selection_list]['label'].value_counts()
         print(f"Label counts for {percent * 100}% of the data:")
@@ -74,7 +81,13 @@ if __name__ == "__main__":
         if(isinstance(sample_choice, list)):
             trainData.selection_list = sample_choice[:int(len(sample_choice)*percent)]
         else:
-            trainData.selection_list = sample_choice[0][:int(len(sample_choice[0])*percent)] + sample_choice[1][:int(len(sample_choice[0])*(1-percent))]
+            trainData.selection_list = []
+            for i,sub_list in enumerate(sample_choice):
+                filtered_list = [item for item in sub_list if item not in trainData.selection_list]
+                if(i == 0):
+                    trainData.selection_list += filtered_list[:int(math.ceil(len(sub_list)*PERCENT[i]*percent))]
+                else:
+                    trainData.selection_list += filtered_list[:int(len(sub_list)*PERCENT[i]*percent)] 
 
         train(model, train_loader, dev_loader, loss_fn, optimizer, device, EPOCHS, PATIENCE)
         model.load_state_dict(pt.load('best_model.pth', weights_only=True))

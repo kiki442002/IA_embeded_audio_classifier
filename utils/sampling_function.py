@@ -119,7 +119,7 @@ def diversity_cluster_based_centroid(model, dataloader, device):
 
     # Appliquer K-means pour regrouper les données en clusters
     n_clusters=5
-    determine_optimal_clusters(features)
+    #determine_optimal_clusters(features)
     kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(features)
     cluster_centers = kmeans.cluster_centers_
 
@@ -189,23 +189,11 @@ def diversity_cluster_based_outlier(model, dataloader, device):
     return  df_representative.sort_values(by='distance', ascending=False).drop_duplicates(subset='index', keep='first')['index'].to_list()
 
 def uncertainty_diversity_sampling(model, dataloader, device):
-    model.eval()
-    df_uncertainty_diversity = pd.DataFrame(columns=['uncertainty_diversity', 'index'])
-
-    with tqdm.tqdm(total=len(dataloader), desc="Sampling Process", unit="iter") as pbar:
-        for i, (inputs, _) in enumerate(dataloader):
-            inputs = inputs.to(device)
-            outputs = model(inputs)
-            max_probs, _ = pt.max(outputs, dim=1)
-            min_probs, _ = pt.min(outputs, dim=1)
-            ratio = (max_probs / (min_probs + 1e-10)).detach().cpu().numpy()  # Calculer le ratio et convertir en NumPy
-            new_data = pd.DataFrame({'uncertainty_diversity': ratio, 'index': i})
-            if df_uncertainty_diversity.empty:
-                df_uncertainty_diversity = new_data
-            else:
-                df_uncertainty_diversity = pd.concat([df_uncertainty_diversity, new_data], ignore_index=True)
-
-            pbar.update(1)
-
-    # Trier les échantillons par ratio croissant
-    return df_uncertainty_diversity.sort_values(by='uncertainty_diversity', ascending=True)['index'].to_list()
+    list1 = diversity_model_base_outlier_sampling(model, dataloader, device)
+    list2 = uncertainty_margin_confidence(model, dataloader, device)
+    return (list1, list2)
+def combine_method_sampling(model, dataloader, device):
+    list1 = diversity_cluster_based_centroid(model, dataloader, device)
+    list2 = diversity_model_base_outlier_sampling(model, dataloader, device)
+    list3 = uncertainty_margin_confidence(model, dataloader, device)
+    return (list1, list2, list3)
