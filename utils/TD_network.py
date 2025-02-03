@@ -27,7 +27,7 @@ class CNNNetwork(nn.Module):
         self.flatten = nn.Flatten()
         
         self.fc1 = nn.Sequential(
-            nn.Linear(in_features=896, out_features=64),
+            nn.Linear(in_features=1680, out_features=64),
             nn.ReLU()
         )
         self.fc2 = nn.Sequential(

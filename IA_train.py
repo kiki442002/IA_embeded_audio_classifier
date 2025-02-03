@@ -84,7 +84,7 @@ if __name__ == "__main__":
     ##########################
     ##### Hyperparamètres ####
     ##########################
-    BATCH_SIZE = 1           # Taille du lot
+    BATCH_SIZE = 128           # Taille du lot
     EPOCHS = 50              # Nombre d'époques
     PATIENCE = 50            # Nombre d'époques sans amélioration avant l'arrêt
     ##########################
