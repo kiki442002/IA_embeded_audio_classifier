@@ -19,13 +19,13 @@ if __name__ == "__main__":
     PATIENCE = 50            # Nombre d'époques sans amélioration avant l'arrêt
     OUTSIZE = False          # True pour DA, False pour DB
     NAME_LIST = "model1_list.pkl"
-    SAMPLE_FUNCTION = combine_method_sampling
-    PERCENT =   [0.25,0.75,0]#[0.75,0.25]#[0.15,0.6,0.25]            # Pourcentage de données d'incertitude pour les méthode de conbinations
+    SAMPLE_FUNCTION = uncertainty_diversity_sampling
+    PERCENT =   [0.5, 0.5]  #[0.75,0.25]#[0.25,0.75,0]##          # Pourcentage de données d'incertitude pour les méthode de conbinations
     ##########################
     ##########################
     
-    db_percents = [0.0005,  0.002, 0.005, 0.01, 0.05 , 0.25, 0.5]
-
+    #db_percents = [0.0005,  0.002, 0.005, 0.01, 0.05 , 0.25, 0.5]
+    db_percents = [0.95]
     #################
     # Initilisation #
     #################
@@ -54,6 +54,8 @@ if __name__ == "__main__":
 
     sample_choice= SAMPLE_FUNCTION(model, train_loader, device)
     df_db = pd.read_csv('meta/bdd_B_train.csv')
+
+    print(len(sample_choice))
 
     for percent in db_percents:
         if(isinstance(sample_choice, list)):

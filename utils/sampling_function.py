@@ -36,9 +36,11 @@ def uncertainty_ratio_sampling(model, dataloader, device):
         for i, (inputs, _) in enumerate(dataloader):
             inputs = inputs.to(device)
             outputs = model(inputs)
-            max_probs, _ = pt.max(outputs, dim=1)
-            min_probs, _ = pt.min(outputs, dim=1)
-            ratio = (max_probs / (min_probs + 1e-10)).detach().cpu().numpy()  # Calculer le ratio et convertir en NumPy
+            # Obtenir les deux plus grandes probabilités
+            top2_probs, _ = pt.topk(outputs, 2, dim=1)
+            max_probs = top2_probs[:, 0]
+            second_max_probs = top2_probs[:, 1]
+            ratio = (max_probs / (second_max_probs + 1e-10)).detach().cpu().numpy()  # Calculer le ratio et convertir en NumPy
             new_data = pd.DataFrame({'ratio': ratio, 'index': i})
             if df_ratio.empty:
                 df_ratio = new_data
@@ -58,9 +60,11 @@ def uncertainty_margin_confidence(model, dataloader, device):
         for i, (inputs, _) in enumerate(dataloader):
             inputs = inputs.to(device)
             outputs = model(inputs)
-            max_probs, _ = pt.max(outputs, dim=1)
-            min_probs, _ = pt.min(outputs, dim=1)
-            margin = (max_probs - min_probs).detach().cpu().numpy()  # Calculer le ratio et convertir en NumPy
+            # Obtenir les deux plus grandes probabilités
+            top2_probs, _ = pt.topk(outputs, 2, dim=1)
+            max_probs = top2_probs[:, 0]
+            second_max_probs = top2_probs[:, 1]
+            margin = (max_probs - second_max_probs).detach().cpu().numpy()  # Calculer le ratio et convertir en NumPy
             new_data = pd.DataFrame({'margin': margin, 'index': i})
             if df_margin.empty:
                 df_margin = new_data
@@ -190,10 +194,10 @@ def diversity_cluster_based_outlier(model, dataloader, device):
 
 def uncertainty_diversity_sampling(model, dataloader, device):
     list1 = diversity_model_base_outlier_sampling(model, dataloader, device)
-    list2 = uncertainty_margin_confidence(model, dataloader, device)
+    list2 = uncertainty_ratio_sampling(model, dataloader, device)
     return (list1, list2)
 def combine_method_sampling(model, dataloader, device):
     list1 = diversity_cluster_based_centroid(model, dataloader, device)
     list2 = diversity_model_base_outlier_sampling(model, dataloader, device)
-    list3 = uncertainty_margin_confidence(model, dataloader, device)
+    list3 = uncertainty_ratio_sampling(model, dataloader, device)
     return (list1, list2, list3)
