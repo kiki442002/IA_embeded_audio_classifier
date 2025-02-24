@@ -17,7 +17,7 @@ class CNNNetwork(nn.Module):
         self.conv1 = nn.Sequential(
             nn.Conv2d(in_channels=1, out_channels=4, kernel_size=(3, 3), stride=1, padding=1),
             nn.ReLU(),
-            nn.MaxPool2d(kernel_size=(2, 2), stride=2)
+            #nn.MaxPool2d(kernel_size=(2, 2), stride=2)
         )
         self.conv2 = nn.Sequential(
             nn.Conv2d(in_channels=4, out_channels=16, kernel_size=(3, 3), stride=1, padding=1),
@@ -27,7 +27,7 @@ class CNNNetwork(nn.Module):
         self.flatten = nn.Flatten()
         
         self.fc1 = nn.Sequential(
-            nn.Linear(in_features=1680, out_features=64),
+            nn.Linear(in_features=7200, out_features=64),
             nn.ReLU()
         )
         self.fc2 = nn.Sequential(
